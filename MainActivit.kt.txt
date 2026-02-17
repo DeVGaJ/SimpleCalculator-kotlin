@@ -1,0 +1,96 @@
+package com.example.simplecalculator   // Change to your package name
+
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.view.View
+import android.widget.Button
+import android.widget.TextView
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var tvResult: TextView
+    private var operand1: Double = 0.0
+    private var operand2: Double = 0.0
+    private var operator = ""
+    private var isNewOp = true
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        tvResult = findViewById(R.id.tvResult)
+
+        val buttonIds = listOf(
+            R.id.btn0, R.id.btn1, R.id.btn2, R.id.btn3, R.id.btn4,
+            R.id.btn5, R.id.btn6, R.id.btn7, R.id.btn8, R.id.btn9,
+            R.id.btnDot, R.id.btnAdd, R.id.btnSub, R.id.btnMul,
+            R.id.btnDiv, R.id.btnEqual, R.id.btnClear
+        )
+
+        buttonIds.forEach { id ->
+            findViewById<Button>(id).setOnClickListener { onButtonClick(it) }
+        }
+    }
+
+    private fun onButtonClick(view: View) {
+        when (view.id) {
+            R.id.btn0 -> appendNumber("0")
+            R.id.btn1 -> appendNumber("1")
+            R.id.btn2 -> appendNumber("2")
+            R.id.btn3 -> appendNumber("3")
+            R.id.btn4 -> appendNumber("4")
+            R.id.btn5 -> appendNumber("5")
+            R.id.btn6 -> appendNumber("6")
+            R.id.btn7 -> appendNumber("7")
+            R.id.btn8 -> appendNumber("8")
+            R.id.btn9 -> appendNumber("9")
+            R.id.btnDot -> appendNumber(".")
+            R.id.btnAdd -> setOperator("+")
+            R.id.btnSub -> setOperator("-")
+            R.id.btnMul -> setOperator("*")
+            R.id.btnDiv -> setOperator("/")
+            R.id.btnEqual -> calculate()
+            R.id.btnClear -> clear()
+        }
+    }
+
+    private fun appendNumber(num: String) {
+        if (isNewOp) {
+            tvResult.text = ""
+            isNewOp = false
+        }
+        tvResult.append(num)
+    }
+
+    private fun setOperator(op: String) {
+        if (tvResult.text.isNotEmpty()) {
+            operand1 = tvResult.text.toString().toDouble()
+            operator = op
+            isNewOp = true
+        }
+    }
+
+    private fun calculate() {
+        if (tvResult.text.isNotEmpty() && operator.isNotEmpty()) {
+            operand2 = tvResult.text.toString().toDouble()
+            val result = when (operator) {
+                "+" -> operand1 + operand2
+                "-" -> operand1 - operand2
+                "*" -> operand1 * operand2
+                "/" -> if (operand2 != 0.0) operand1 / operand2 else Double.NaN
+                else -> 0.0
+            }
+            tvResult.text = if (result.isNaN()) "Error" else result.toString()
+            operator = ""
+            isNewOp = true
+        }
+    }
+
+    private fun clear() {
+        tvResult.text = ""
+        operand1 = 0.0
+        operand2 = 0.0
+        operator = ""
+        isNewOp = true
+    }
+}
